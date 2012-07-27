@@ -19,3 +19,6 @@
 [submodule "modules/perl-charclass"]
 	path = modules/perl-charclass
 	url = git://github.com/wakaba/perl-charclass
+[submodule "modules/vcutils"]
+	path = modules/vcutils
+	url = git://github.com/wakaba/perl-vcutils
