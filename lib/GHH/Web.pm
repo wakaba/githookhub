@@ -40,9 +40,9 @@ sub process {
             }
         });
 
-        my $action = $app->bare_param('action') || '';
-        if ($action) {
-            my $cv = eval { $action->apply_action_as_cv($action) };
+        my $act = $app->bare_param('action') || '';
+        if ($act) {
+            my $cv = eval { $action->apply_action_as_cv($act) };
             warn $@ if $@;
         } else {
             $action->refname($app->bare_param('refname'));
