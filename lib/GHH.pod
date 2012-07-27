@@ -30,7 +30,7 @@ C<config/rules/hook1.json>:
 Setup dependency:
 
   $ git submodule update --init
-  $ make pmb-install
+  $ make pmb-install lplackup
 
 Then, start the server:
 
