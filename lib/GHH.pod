@@ -1,0 +1,59 @@
+=head1
+
+GHH - Git update hook hub
+
+=head1 EXAMPLE
+
+C<hooks/update> of your Git repository:
+
+  #!/bin/sh
+  git_dir=`cd $GIT_DIR; pwd`
+  git_dir=${git_dir#/var/git}
+  commits=`git log --pretty=format:%H $2^..$3`
+  
+  curl http://ghhserver/ \
+      --data-urlencode "refname=$1" \
+      --data-urlencode "commits=$commits" \
+      --data-urlencode "url=git://`hostname`$git_dir"
+  true
+
+C<config/rules/hook1.json>:
+
+  {
+    "name": "hook1",
+    "can_make": "test",
+    "has_file": "config/foo.dat",
+    "http_post": "http://hogeserver/fuga",
+    "args": [1, 2, 3, {"foo": "bar"}]
+  }
+
+Setup dependency:
+
+  $ git submodule update --init
+  $ make pmb-install
+
+Then, start the server:
+
+  $ GHH_RULES_D=config/rules ./plackup -s Twiggy bin/server.psgi -p 4155
+
+Note that Starman, Starlet, and Twiggy::Prefork cannot handle the
+application well.
+
+Then, when something is pushed to the repository, and if the
+repository meets the condition specified in C<hook1.json>, then the
+URL specified in the C<http_post> field is accessed with JSON data,
+whose format is similar to (but not completely equal to)
+<https://help.github.com/articles/post-receive-hooks>.
+
+=head1 AUTHOR
+
+Wakaba (id:wakabatan) <wakabatan@hatena.ne.jp>.
+
+=head1 LICENSE
+
+Copyright 2012 Hatena <http://www.hatena.ne.jp/>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
