@@ -3,4 +3,4 @@ AnyEvent::Util
 File::Temp
 Path::Class
 Plack
-Twiggy::Prefork
+Twiggy

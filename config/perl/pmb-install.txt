@@ -11,9 +11,7 @@ Hash::MultiValue~0.12
 Test::Output~1.01
 Class::ErrorHandler~0.01
 Unicode::Stringprep~1.104
-Scope::Guard~0.20
 Class::Data::Accessor~0.04004
-Proc::Wait3~0.04
 Sub::Uplevel~0.24
 Encode~2.44
 Class::Load~0.19
@@ -52,9 +50,6 @@ Math::Round~0.06
 File::ShareDir::Install~0.04
 Crypt::OpenSSL::Random~0.04
 Class::Accessor~0.34
-Plack::Handler::Twiggy::Prefork
-Class::Accessor::Lite~0.05
-Parallel::Prefork~0.13
 Path::Class~0.26
 Module::Build~0.40
 inc::latest~0.4001
