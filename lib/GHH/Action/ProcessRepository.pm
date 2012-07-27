@@ -185,6 +185,10 @@ sub processing_rules_d {
     return $GHH::Config::RulesD || die "\$GHH::Config::RulesD not defined";
 }
 
+sub action_defs_d {
+    return $_[0]->processing_rules_d->subdir('actions');
+}
+
 sub processing_rules {
     my $self = shift;
     return [map {
@@ -281,6 +285,21 @@ sub run_as_cv {
                     });
                 }
 
+                if ($rule->{call_action}) {
+                    $actions_cv->begin;
+                    $self->log_as_cv->cb(sub {
+                        my $commits = $_[0]->recv;
+                        http_post
+                            url => 'http://' . $rule->{call_action}->{host} . '/',
+                            params => {
+                                url => $self->url,
+                                action => $rule->{call_action}->{name} || 'default',
+                            },
+                            anyevent => 1,
+                            cb => sub { $actions_cv->end };
+                    });
+                }
+
                 if ($rule->{ikachan}) {
                     $actions_cv->begin;
                     $self->log_as_cv->cb(sub {
@@ -310,6 +329,13 @@ sub run_as_cv {
 
     $actions_cv->end;
     return $actions_cv;
+}
+
+sub apply_action_as_cv {
+    my ($self, $action) = @_;
+    my $json = file2perl $self->action_defs_d->file($action . '.json');
+    return run_cmd
+        "cd @{[quotemeta $self->temp_repo_d]} && $json->{command}";
 }
 
 1;

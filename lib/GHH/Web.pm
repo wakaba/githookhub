@@ -39,13 +39,20 @@ sub process {
                 warn '[', scalar gmtime, '] ', $msg, "\n";
             }
         });
-        $action->refname($app->bare_param('refname'));
-        $action->commits($app->bare_param('commits'));
 
-        my $cv = eval {
-            $action->run_as_cv;
-        };
-        warn $@ if $@;
+        my $action = $app->bare_param('action') || '';
+        if ($action) {
+            my $cv = eval { $action->apply_action_as_cv($action) };
+            warn $@ if $@;
+        } else {
+            $action->refname($app->bare_param('refname'));
+            $action->commits($app->bare_param('commits'));
+            
+            my $cv = eval {
+                $action->run_as_cv;
+            };
+            warn $@ if $@;
+        }
 
         return $app->throw;
     }
