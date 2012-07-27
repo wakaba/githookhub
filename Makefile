@@ -3,6 +3,7 @@ all:
 # ------ Setup ------
 
 WGET = wget
+GIT = git
 PERL = perl
 PERL_VERSION = latest
 PERL_PATH = $(abspath local/perlbrew/perls/perl-$(PERL_VERSION)/bin)
@@ -23,3 +24,6 @@ generatepm: %: Makefile-setupenv
 	$(MAKE) --makefile Makefile.setupenv $@ \
 	    PMB_PMTAR_REPO_URL=$(PMB_PMTAR_REPO_URL) \
 	    PMB_PMPP_REPO_URL=$(PMB_PMPP_REPO_URL)
+
+git-submodules:
+	$(GIT) submodule update --init
