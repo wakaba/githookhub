@@ -255,6 +255,9 @@ sub run_as_cv {
         }
         $rules_cv->end;
         $rules_cv->cb(sub {
+            my $repo = {
+                url => $self->url,
+            };
             for my $rule (@applicable_rule) {
                 if ($rule->{http_post}) {
                     $actions_cv->begin;
@@ -270,13 +273,35 @@ sub run_as_cv {
                                 before => $self->old_commit,
                                 after => $self->new_commit,
                                 ref => $self->refname,
-                                repository => {
-                                    url => $self->url,
-                                },
+                                repository => $repo,
                                 commits => $commits,
                             }),
                             anyevent => 1,
                             cb => sub { $actions_cv->end };
+                    });
+                }
+
+                if ($rule->{ikachan}) {
+                    $actions_cv->begin;
+                    $self->log_as_cv->cb(sub {
+                        my $commits = $_[0]->recv;
+                        http_post
+                            anyevent => 1,
+                            url => qq{http://@{[$rule->{ikachan}->{host}]}/@{[$rule->{ikachan}->{privmsg} ? 'privmsg' : 'notice']}},
+                            params => {
+                                channel => $rule->{ikachan}->{channel},
+                                message => (join "\n", map {
+                                    my $repository = $repo;
+                                    my $commit = $_;
+                                    my $refname = $self->refname;
+                                    my $code = $rule->{ikachan}->{construct_line} ||
+                                        q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
+                                    eval $code or $@;
+                                } @$commits),
+                            },
+                            cb => sub {
+                                $actions_cv->end;
+                            };
                     });
                 }
             }
