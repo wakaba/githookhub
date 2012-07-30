@@ -334,8 +334,14 @@ sub run_as_cv {
 sub apply_action_as_cv {
     my ($self, $action) = @_;
     my $json = file2perl $self->action_defs_d->file($action . '.json');
-    return run_cmd
-        "cd @{[quotemeta $self->temp_repo_d]} && $json->{command}";
+
+    my $cv = AE::cv;
+    $self->clone_as_cv->cb(sub {
+        my $run_cv = run_cmd
+            "cd @{[quotemeta $self->temp_repo_d]} && ($json->{command})";
+        $run_cv->cb(sub { $cv->send });
+    });
+    return $cv;
 }
 
 1;
