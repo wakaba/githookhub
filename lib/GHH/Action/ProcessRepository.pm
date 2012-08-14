@@ -220,12 +220,19 @@ sub run_as_cv {
             $actions_cv->send({error => "Clone failed"});
         }
 
+        my $url = $self->url;
         my @applicable_rule;
         my $rules_cv = AE::cv;
         $rules_cv->begin(sub { $_[0]->send });
         for my $rule (@{$self->processing_rules}) {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
             next if $rule->{error};
+
+            if (defined $rule->{url_match}) {
+                unless ($url =~ /$rule->{url_match}/) {
+                    next;
+                }
+            }
             
             if ($rule->{has_file}) {
                 $self->print_message("$rule->{name}: Has file $rule->{has_file}?") if $DEBUG;
@@ -261,7 +268,7 @@ sub run_as_cv {
         $rules_cv->end;
         $rules_cv->cb(sub {
             my $repo = {
-                url => $self->url,
+                url => $url,
             };
             for my $rule (@applicable_rule) {
                 if ($rule->{http_post}) {
