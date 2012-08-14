@@ -7,6 +7,7 @@ use AnyEvent;
 use AnyEvent::Util;
 use List::Ish;
 use Git::Parser::Log;
+use MIME::Base64 qw(decode_base64);
 use GHH::Config;
 use Web::UserAgent::Functions qw(http_post http_post_data);
 use JSON::Functions::XS qw(file2perl perl2json_bytes_for_record);
@@ -269,7 +270,7 @@ sub run_as_cv {
                         my $commits = $_[0]->recv;
                         http_post_data
                             url => $rule->{http_post},
-                            basic_auth => $rule->{basic_auth},
+                            basic_auth => $rule->{basic_auth} ? [$rule->{basic_auth}->[0], decode_base64 $rule->{basic_auth}->[1]] : undef,
                             content => (perl2json_bytes_for_record +{
                                 hook_rule_name => $rule->{name},
                                 hook_args => $rule->{args},
@@ -292,7 +293,7 @@ sub run_as_cv {
                         my $commits = $_[0]->recv;
                         http_post
                             url => 'http://' . $rule->{call_action}->{host} . '/',
-                            basic_auth => $rule->{basic_auth},
+                            basic_auth => $rule->{basic_auth} ? [$rule->{basic_auth}->[0], decode_base64 $rule->{basic_auth}->[1]] : undef,
                             params => {
                                 url => $self->url,
                                 action => $rule->{call_action}->{name} || 'default',
