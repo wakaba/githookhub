@@ -40,19 +40,13 @@ sub process {
             }
         });
 
-        my $act = $app->bare_param('action') || '';
-        if ($act) {
-            my $cv = eval { $action->apply_action_as_cv($act) };
-            warn $@ if $@;
-        } else {
-            $action->refname($app->bare_param('refname'));
-            $action->commits($app->bare_param('commits'));
-            
-            my $cv = eval {
-                $action->run_as_cv;
-            };
-            warn $@ if $@;
-        }
+        $action->refname($app->bare_param('refname'));
+        $action->commits($app->bare_param('commits'));
+        
+        my $cv = eval {
+            $action->run_as_cv;
+        };
+        warn $@ if $@;
 
         return $app->throw;
     }
