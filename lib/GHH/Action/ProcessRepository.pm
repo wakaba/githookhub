@@ -51,6 +51,13 @@ sub new_commit {
     return $_[0]->commits->[0];
 }
 
+sub event {
+    if (@_ > 1) {
+        $_[0]->{event} = $_[1];
+    }
+    return $_[0]->{event};
+}
+
 sub print_message {
     my ($self, $msg) = @_;
     $self->onmessage->($msg);
@@ -227,6 +234,10 @@ sub run_as_cv {
         for my $rule (@{$self->processing_rules}) {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
             next if $rule->{error};
+
+            unless (($rule->{event} || 'push') eq $self->event) {
+                next;
+            }
 
             if (defined $rule->{url_match}) {
                 unless ($url =~ /$rule->{url_match}/) {

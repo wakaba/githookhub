@@ -42,6 +42,7 @@ sub process {
 
         $action->refname($app->bare_param('refname'));
         $action->commits($app->bare_param('commits'));
+        $action->event($app->bare_param('event') || 'push');
         
         my $cv = eval {
             $action->run_as_cv;
