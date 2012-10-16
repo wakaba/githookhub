@@ -137,9 +137,12 @@ sub log_as_cv {
     my $cv = AE::cv;
     $self->{log_as_cvs} = [$cv];
     my $log = [];
+    my $old = $self->old_commit;
+    my $new = $self->new_commit;
+    $old = $new . '^' if $old eq $new;
     $self->git_as_cv(
         ['log', '--raw', '--format=raw',
-         $self->old_commit . '..' . $self->new_commit],
+         $old . '..' . $new],
         chdir => $self->temp_repo_d->stringify,
         onstdout => sub {
             push @$log, $_[0] if defined $_[0];
@@ -244,7 +247,6 @@ sub run_as_cv {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
             next RULE if $rule->{error};
 
-warn "@{[$rule->{event_match} || 'push']} vs @{[$self->event]} ($rule->{name})";
             unless (($rule->{event_match} || 'push') eq $self->event) {
                 next RULE;
             }
@@ -360,7 +362,6 @@ warn "@{[$rule->{event_match} || 'push']} vs @{[$self->event]} ($rule->{name})";
                                     my $args = $hook_args;
                                     my $code = $rule->{ikachan}->{construct_line} ||
                                         q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
-$code = q{"debug"};
                                     eval $code or do {
                                         warn $@;
                                         $@;
