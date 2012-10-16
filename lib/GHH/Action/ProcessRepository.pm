@@ -244,6 +244,7 @@ sub run_as_cv {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
             next RULE if $rule->{error};
 
+warn "@{[$rule->{event_match} || 'push']} vs @{[$self->event]} ($rule->{name})";
             unless (($rule->{event_match} || 'push') eq $self->event) {
                 next RULE;
             }
