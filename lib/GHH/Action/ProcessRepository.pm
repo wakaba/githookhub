@@ -334,6 +334,7 @@ sub run_as_cv {
                                     my $repository = $repo;
                                     my $commit = $_;
                                     my $refname = $self->refname;
+                                    $refname = '' unless defined $refname;
                                     my $code = $rule->{ikachan}->{construct_line} ||
                                         q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
                                     eval $code or $@;
