@@ -359,7 +359,7 @@ sub run_as_cv {
                                     my $args = $hook_args;
                                     my $code = $rule->{ikachan}->{construct_line} ||
                                         q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
-                                    eval $code or $@;
+                                    eval $code or warn $@;
                                 } @$commits),
                             },
                             cb => sub {
