@@ -58,6 +58,13 @@ sub event {
     return $_[0]->{event};
 }
 
+sub hook_args {
+    if (@_ > 1) {
+        $_[0]->{hook_args} = $_[1];
+    }
+    return $_[0]->{hook_args};
+}
+
 sub print_message {
     my ($self, $msg) = @_;
     $self->onmessage->($msg);
@@ -228,20 +235,30 @@ sub run_as_cv {
         }
 
         my $url = $self->url;
+        my $hook_args = $self->hook_args || {};
+        $hook_args = {} unless ref $hook_args eq 'HASH';
         my @applicable_rule;
         my $rules_cv = AE::cv;
         $rules_cv->begin(sub { $_[0]->send });
-        for my $rule (@{$self->processing_rules}) {
+        RULE: for my $rule (@{$self->processing_rules}) {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
-            next if $rule->{error};
+            next RULE if $rule->{error};
 
-            unless (($rule->{event} || 'push') eq $self->event) {
-                next;
+            unless (($rule->{event_match} || 'push') eq $self->event) {
+                next RULE;
+            }
+
+            for my $args_key (keys %{$rule->{args_match} or {}}) {
+                my $expected = $rule->{args_match}->{$args_key};
+                $expected = '' unless defined $expected;
+                my $actual = $hook_args->{$args_key};
+                $actual = '' unless defined $args;
+                next RULE unless $expected eq $actual;
             }
 
             if (defined $rule->{url_match}) {
                 unless ($url =~ /$rule->{url_match}/) {
-                    next;
+                    next RULE;
                 }
             }
             
@@ -249,7 +266,7 @@ sub run_as_cv {
                 $self->print_message("$rule->{name}: Has file $rule->{has_file}?") if $DEBUG;
                 unless ($self->exists_file($rule->{has_file})) {
                     $self->print_message("$rule->{name}: $rule->{has_file} not found") if $DEBUG;
-                    next;
+                    next RULE;
                 }
             }
 
@@ -292,6 +309,10 @@ sub run_as_cv {
                             content => (perl2json_bytes_for_record +{
                                 hook_rule_name => $rule->{name},
                                 hook_args => $rule->{args},
+                                current => {
+                                    event => $self->event,
+                                    hook_args => $hook_args,
+                                },
                                 
                                 # <https://help.github.com/articles/post-receive-hooks>.
                                 before => $self->old_commit,
@@ -335,6 +356,7 @@ sub run_as_cv {
                                     my $commit = $_;
                                     my $refname = $self->refname;
                                     $refname = '' unless defined $refname;
+                                    my $args = $hook_args;
                                     my $code = $rule->{ikachan}->{construct_line} ||
                                         q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
                                     eval $code or $@;

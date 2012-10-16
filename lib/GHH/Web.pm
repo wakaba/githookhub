@@ -83,7 +83,8 @@ sub process {
         } elsif (defined $json->{after}) {
             $action->commits($json->{after});
         }
-        $action->event($json->{event} || 'push');
+        $action->event($json->{hook_event} || 'push');
+        $action->hook_args($json->{hook_args});
         
         my $cv = eval {
             $action->run_as_cv;
