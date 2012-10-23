@@ -247,7 +247,7 @@ sub run_as_cv {
             $self->print_message("$rule->{name} ($rule->{f})...") if $DEBUG;
             next RULE if $rule->{error};
 
-            unless (($rule->{event_match} || 'push') eq $self->event) {
+            unless ($self->event =~ /@{[$rule->{event_match} || 'push']}/) {
                 next RULE;
             }
 
@@ -256,7 +256,7 @@ sub run_as_cv {
                 $expected = '' unless defined $expected;
                 my $actual = $hook_args->{$args_key};
                 $actual = '' unless defined $actual;
-                next RULE unless $expected eq $actual;
+                next RULE unless $actual =~ /$expected/;
             }
 
             if (defined $rule->{url_match}) {
