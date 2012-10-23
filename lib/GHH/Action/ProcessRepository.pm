@@ -253,9 +253,9 @@ sub run_as_cv {
 
             for my $args_key (keys %{$rule->{args_match} or {}}) {
                 my $expected = $rule->{args_match}->{$args_key};
-                $expected = '' unless defined $expected;
+                next RULE unless defined $expected;
                 my $actual = $hook_args->{$args_key};
-                $actual = '' unless defined $actual;
+                next RULE unless defined $actual;
                 next RULE unless $actual =~ /$expected/;
             }
 
