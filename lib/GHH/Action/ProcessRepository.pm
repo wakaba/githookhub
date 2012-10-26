@@ -264,6 +264,13 @@ sub run_as_cv {
                     next RULE;
                 }
             }
+
+            if (defined $rule->{branch_match}) {
+                my $branch = $self->branch;
+                unless (defined $branch and $branch =~ /$rule->{branch_match}/) {
+                    next RULE;
+                }
+            }
             
             if ($rule->{has_file}) {
                 $self->print_message("$rule->{name}: Has file $rule->{has_file}?") if $DEBUG;
