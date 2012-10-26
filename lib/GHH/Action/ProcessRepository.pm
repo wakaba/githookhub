@@ -266,7 +266,7 @@ sub run_as_cv {
             }
 
             if (defined $rule->{branch_match}) {
-                my $branch = $self->branch;
+                my $branch = $self->refname;
                 unless (defined $branch and $branch =~ /$rule->{branch_match}/) {
                     next RULE;
                 }
