@@ -71,9 +71,6 @@ Crypt::OpenSSL::RSA~0.28
 OAuth::Lite::AuthMethod
 Getopt::Long~2.38
 Pod::Usage~1.51
-Unicode::Normalize~1.15
-Unicode::Stringprep~1.104
-Net::LibIDN~0.12
 IO::Dir~1.07
 Time::Local~1.2300
 Data::MessagePack~0.46
@@ -97,3 +94,5 @@ DateTime::Locale~0.45
 Test::Fatal~0.010
 DateTime~0.77
 Scalar::Util~1.25
+Unicode::Normalize~1.15
+Unicode::Stringprep~1.104
