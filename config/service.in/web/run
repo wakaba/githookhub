@@ -1,0 +1,3 @@
+#!/bin/sh
+export PLACK_COMMAND_LINE_ARGS="-s Twiggy"
+exec @@LOCAL@@/bin/@@INSTANCENAME@@-web.sh

@@ -23,7 +23,10 @@ pmbp-update: pmbp-upgrade
 	perl local/bin/pmbp.pl --update
 
 pmbp-install: pmbp-upgrade
-	perl local/bin/pmbp.pl --install
+	perl local/bin/pmbp.pl --install \
+	    --create-perl-command-shortcut perl \
+	    --create-perl-command-shortcut prove \
+	    --create-perl-command-shortcut plackup
 
 # ------ Tests ------
 
