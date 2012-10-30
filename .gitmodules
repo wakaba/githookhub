@@ -7,15 +7,9 @@
 [submodule "modules/perl-web-useragent-functions"]
 	path = modules/perl-web-useragent-functions
 	url = git://github.com/wakaba/perl-web-useragent-functions
-[submodule "modules/perl-web-utils"]
-	path = modules/perl-web-utils
-	url = git://github.com/wakaba/perl-web-utils
 [submodule "modules/perl-ooutils"]
 	path = modules/perl-ooutils
 	url = git://github.com/wakaba/perl-ooutils
-[submodule "modules/perl-weburl"]
-	path = modules/perl-weburl
-	url = git://github.com/wakaba/perl-weburl
 [submodule "modules/perl-charclass"]
 	path = modules/perl-charclass
 	url = git://github.com/wakaba/perl-charclass
@@ -25,3 +19,9 @@
 [submodule "modules/karasuma-config"]
 	path = modules/karasuma-config
 	url = git://github.com/wakaba/karasuma-config
+[submodule "modules/web-url"]
+	path = modules/web-url
+	url = git://github.com/wakaba/perl-web-url
+[submodule "modules/web-encodings"]
+	path = modules/web-encodings
+	url = git://github.com/wakaba/perl-web-encodings
