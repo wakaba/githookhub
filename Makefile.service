@@ -42,12 +42,14 @@ SERVER_INSTANCE_CONFIG_DIR = $(ROOT_DIR)/../../config
 LOG_DIR = $(LOCAL_DIR)/log
 SERVER_USER = web
 LOG_USER_GROUP = $(SERVER_USER).web
+SYSCONFIG = /etc/sysconfig/$(APP_NAME)
 
 SERVICE_DIR = /etc/service
 
 define SUBST_SED
 s/@@INSTANCENAME@@/$(subst /,\/,$(SERVER_INSTANCE_NAME))/g; \
 s/@@INSTANCECONFIG@@/$(subst /,\/,$(SERVER_INSTANCE_CONFIG_DIR))/g; \
+s/@@SYSCONFIG@@/$(subst /,\/,$(SYSCONFIG))/g; \
 s/@@ROOT@@/$(subst /,\/,$(ROOT_DIR))/g; \
 s/@@LOCAL@@/$(subst /,\/,$(LOCAL_DIR))/g; \
 s/@@LOGDIR@@/$(subst /,\/,$(LOG_DIR))/g; \
