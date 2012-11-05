@@ -336,17 +336,23 @@ sub run_as_cv {
                     });
                 }
 
-                if ($rule->{call_action}) {
+                if ($rule->{gitworks_action}) {
                     $actions_cv->begin;
                     $self->log_as_cv->cb(sub {
                         my $commits = $_[0]->recv;
-                        http_post
-                            url => 'http://' . $rule->{call_action}->{host} . '/',
+                        my $data = $rule->{gitworks_action};
+                        http_post_data
+                            url => 'http://' . $data->{host} . '/',
                             basic_auth => $rule->{basic_auth} ? [$rule->{basic_auth}->[0], decode_base64 $rule->{basic_auth}->[1]] : undef,
-                            params => {
-                                url => $self->url,
-                                action => $rule->{call_action}->{name} || 'default',
-                            },
+                            content => (perl2json_bytes_for_record +{
+                                repository => {url => $data->{repository_url}},
+                                ref => defined $data->{repository_branch} ? 'refs/heads/' . $data->{repository_branch} : undef,
+                                after => $data->{repository_revision},
+                                hook_args => {
+                                    action_type => $data->{type},
+                                    action_args => $data->{args},
+                                },
+                            }),
                             anyevent => 1,
                             cb => sub { $actions_cv->end };
                     });
