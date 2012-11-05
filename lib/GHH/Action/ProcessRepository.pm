@@ -362,24 +362,33 @@ sub run_as_cv {
                     $actions_cv->begin;
                     $self->log_as_cv->cb(sub {
                         my $commits = $_[0]->recv;
+                        my $commit = $commits->[0];
+                        my $message;
+                        my $is_privmsg;
+                        {
+                            # $commit
+                            my $repository = $repo;
+                            my $refname = $self->refname;
+                            $refname = '' unless defined $refname;
+                            my $args = $hook_args;
+                            my $code = $rule->{ikachan}->{construct_line} ||
+                                q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
+                            $message = eval $code || do {
+                                warn $@;
+                                $@;
+                            };
+                            $code = $rule->{ikachan}->{is_privmsg} || 0;
+                            $is_privmsg = eval $code || do {
+                                warn $@;
+                                1;
+                            };
+                        }
                         http_post
                             anyevent => 1,
-                            url => qq{http://@{[$rule->{ikachan}->{host}]}/@{[$rule->{ikachan}->{privmsg} ? 'privmsg' : 'notice']}},
+                            url => qq{http://@{[$rule->{ikachan}->{host}]}/@{[$is_privmsg ? 'privmsg' : 'notice']}},
                             params => {
                                 channel => $rule->{ikachan}->{channel},
-                                message => (join "\n", map {
-                                    my $repository = $repo;
-                                    my $commit = $_;
-                                    my $refname = $self->refname;
-                                    $refname = '' unless defined $refname;
-                                    my $args = $hook_args;
-                                    my $code = $rule->{ikachan}->{construct_line} ||
-                                        q{ sprintf "[%s] %s: %s %s", $repository->{url}, $commit->{author}->{name}, $commit->{message}, substr $commit->{id}, 0, 10 };
-                                    eval $code or do {
-                                        warn $@;
-                                        $@;
-                                    };
-                                } @$commits),
+                                message => $message,
                             },
                             cb => sub {
                                 $actions_cv->end;
