@@ -342,7 +342,7 @@ sub run_as_cv {
                         my $commits = $_[0]->recv;
                         my $data = $rule->{gitworks_action};
                         http_post_data
-                            url => 'http://' . $data->{host} . '/',
+                            url => 'http://' . $data->{host} . '/hook',
                             basic_auth => $rule->{basic_auth} ? [$rule->{basic_auth}->[0], decode_base64 $rule->{basic_auth}->[1]] : undef,
                             content => (perl2json_bytes_for_record +{
                                 repository => {url => $data->{repository_url}},
