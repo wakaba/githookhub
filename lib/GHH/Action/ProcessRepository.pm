@@ -352,6 +352,13 @@ sub run_as_cv {
                                     action_type => $data->{type},
                                     action_args => $data->{args},
                                 },
+                                current => {
+                                    before => $self->old_commit,
+                                    after => $self->new_commit,
+                                    ref => $self->refname,
+                                    repository => $repo,
+                                    event => $self->event,
+                                },
                             }),
                             anyevent => 1,
                             cb => sub { $actions_cv->end };
