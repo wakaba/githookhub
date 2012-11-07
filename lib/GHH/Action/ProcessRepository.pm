@@ -378,10 +378,8 @@ sub run_as_cv {
                                 $@;
                             };
                             $code = $rule->{ikachan}->{is_privmsg} || 0;
-                            $is_privmsg = eval $code || do {
-                                warn $@;
-                                0;
-                            };
+                            $is_privmsg = eval $code;
+                            warn $@ if $@;
                         }
                         http_post
                             anyevent => 1,
