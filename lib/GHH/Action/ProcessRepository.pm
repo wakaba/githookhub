@@ -320,6 +320,10 @@ sub run_as_cv {
                                 hook_rule_name => $rule->{name},
                                 hook_args => $rule->{args},
                                 current => {
+                                    before => $self->old_commit,
+                                    after => $self->new_commit,
+                                    ref => $self->refname,
+                                    repository => $repo,
                                     event => $self->event,
                                     hook_args => $hook_args,
                                 },
@@ -358,6 +362,7 @@ sub run_as_cv {
                                     ref => $self->refname,
                                     repository => $repo,
                                     event => $self->event,
+                                    hook_args => $hook_args,
                                 },
                             }),
                             anyevent => 1,
