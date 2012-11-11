@@ -78,7 +78,7 @@ sub die_message {
 
 sub temp_repo_temp {
     my $self = shift;
-    return $self->{temp_repo_temp} ||= File::Temp->newdir(CLEANUP => !$DEBUG);
+    return $self->{temp_repo_temp} ||= File::Temp->newdir(CLEANUP => not ($DEBUG and $DEBUG > 5));
 }
 
 sub temp_repo_d {
